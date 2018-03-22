@@ -12,6 +12,10 @@ var _clone = require('lodash/clone');
 
 var _clone2 = _interopRequireDefault(_clone);
 
+var _isFunction = require('lodash/isFunction');
+
+var _isFunction2 = _interopRequireDefault(_isFunction);
+
 var _manager = require('../manager.js');
 
 var _deferredReady = require('../utils/deferredReady.js');
@@ -173,8 +177,12 @@ exports.default = {
       (0, _TwoWayBindingWrapper2.default)(function (increment, decrement, shouldUpdate) {
         _this2.$mapObject.addListener('center_changed', function () {
           if (shouldUpdate()) {
-            _this2.$emit('center_changed', _this2.$mapObject.getCenter());
-            _this2.$emit('update:center', _this2.$mapObject.getCenter());
+            var center = _this2.$mapObject.getCenter();
+            _this2.$emit('center_changed', center);
+            _this2.$emit('update:center', _this2.center && (0, _isFunction2.default)(_this2.center.lat) ? center : {
+              lat: center.lat(),
+              lng: center.lng()
+            });
           }
           decrement();
         });
@@ -190,9 +198,16 @@ exports.default = {
         _this2.$emit('zoom_changed', _this2.$mapObject.getZoom());
         _this2.$emit('update:zoom', _this2.$mapObject.getZoom());
       });
+
       _this2.$mapObject.addListener('bounds_changed', function () {
-        _this2.$emit('bounds_changed', _this2.$mapObject.getBounds());
-        _this2.$emit('update:bounds', _this2.$mapObject.getBounds());
+        var bounds = _this2.$mapObject.getBounds();
+        _this2.$emit('bounds_changed', bounds);
+        _this2.$emit('update:bounds', _this2.bounds && (0, _isFunction2.default)(_this2.bounds.getNorthEast) ? bounds : {
+          north: bounds && bounds.getNorthEast().lat() || null,
+          east: bounds && bounds.getNorthEast().lng() || null,
+          south: bounds && bounds.getSouthWest().lat() || null,
+          west: bounds && bounds.getSouthWest().lng() || null
+        });
       });
 
       _this2.$on('tilt_changed', function () {

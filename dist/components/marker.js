@@ -122,7 +122,7 @@ exports.default = {
   },
   destroyed: function destroyed() {
     if (this.$markerObject) {
-      this.$parent.$emit('unregister-marker', { component: this, object: this.$markerObject });
+      this.$parent && this.$parent.$emit('unregister-marker', { component: this, object: this.$markerObject });
     }
     this.$markerObject.setMap(null);
   },
@@ -165,9 +165,9 @@ exports.default = {
         _this2.$emit('update:icon', _this2.$markerObject.icon);
       });
       this.$on('position_changed', function () {
-        _this2.$emit('update:position', _this2.position && (0, _isFunction2.default)(_this2.position.lat) ? _this2.$markerObject.position : {
-          lat: _this2.$markerObject.position.lat(),
-          lng: _this2.$markerObject.position.lng()
+        _this2.$emit('update:position', _this2.position && (0, _isFunction2.default)(_this2.position.lat) ? _this2.$markerObject.getPosition() : {
+          lat: _this2.$markerObject.getPosition().lat(),
+          lng: _this2.$markerObject.getPosition().lng()
         });
       });
       this.$on('shape_changed', function () {
@@ -182,7 +182,7 @@ exports.default = {
 
       (0, _eventsBinder2.default)(this, this.$markerObject, events);
 
-      this.$parent.$emit('register-marker', { component: this, object: this.$markerObject });
+      this.$parent && this.$parent.$emit('register-marker', { component: this, object: this.$markerObject });
     },
     registerInfoWindow: function registerInfoWindow(_ref) {
       var instance = _ref.component;

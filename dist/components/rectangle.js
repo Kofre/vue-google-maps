@@ -80,9 +80,9 @@ exports.default = {
       this.$on('bounds_changed', function () {
         _this.$emit('update:bounds', _this.bounds && (0, _isFunction2.default)(_this.bounds.getNorthEast) ? _this.$rectangleObject.bounds : {
           north: _this.$rectangleObject.bounds.getNorthEast().lat(),
-          east: _this.$rectangleObject.bounds.getNorthEast().lat(),
-          south: _this.$rectangleObject.bounds.getNorthEast().lat(),
-          west: _this.$rectangleObject.bounds.getSouthWest().lat()
+          east: _this.$rectangleObject.bounds.getNorthEast().lng(),
+          south: _this.$rectangleObject.bounds.getSouthWest().lat(),
+          west: _this.$rectangleObject.bounds.getSouthWest().lng()
         });
       });
 
