@@ -174,6 +174,7 @@ exports.default = {
         _this2.$mapObject.addListener('center_changed', function () {
           if (shouldUpdate()) {
             _this2.$emit('center_changed', _this2.$mapObject.getCenter());
+            _this2.$emit('update:center', _this2.$mapObject.getCenter());
           }
           decrement();
         });
@@ -187,9 +188,21 @@ exports.default = {
       });
       _this2.$mapObject.addListener('zoom_changed', function () {
         _this2.$emit('zoom_changed', _this2.$mapObject.getZoom());
+        _this2.$emit('update:zoom', _this2.$mapObject.getZoom());
       });
       _this2.$mapObject.addListener('bounds_changed', function () {
         _this2.$emit('bounds_changed', _this2.$mapObject.getBounds());
+        _this2.$emit('update:bounds', _this2.$mapObject.getBounds());
+      });
+
+      _this2.$on('tilt_changed', function () {
+        _this2.$emit('update:tilt', _this2.$mapObject.tilt);
+      });
+      _this2.$on('maptypeid_changed', function () {
+        _this2.$emit('update:mapTypeId', _this2.$mapObject.mapTypeId);
+      });
+      _this2.$on('heading_changed', function () {
+        _this2.$emit('update:heading', _this2.$mapObject.heading);
       });
 
       // binding events

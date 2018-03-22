@@ -73,13 +73,21 @@ exports.default = {
     var options = (0, _clone2.default)(this.getPropsValues());
     delete options.options;
     Object.assign(options, this.options);
-    this.$polylineObject = new google.maps.Polyline(options);
-    this.$polylineObject.setMap(this.$map);
+    this.$polylineObject = this.createPolylineObject(options);
 
     (0, _propsBinder2.default)(this, this.$polylineObject, (0, _omit2.default)(props, ['deepWatch', 'path']));
     (0, _eventsBinder2.default)(this, this.$polylineObject, events);
 
     var clearEvents = function clearEvents() {};
+
+    var extractPath = function extractPath(mvcArray) {
+      var path = [];
+      for (var j = 0; j < mvcArray.getLength(); j++) {
+        var point = mvcArray.getAt(j);
+        path.push({ lat: point.lat(), lng: point.lng() });
+      }
+      return path;
+    };
 
     this.$watch('path', function (path) {
       if (path) {
@@ -92,6 +100,7 @@ exports.default = {
 
         var updatePaths = function updatePaths() {
           _this.$emit('path_changed', _this.$polylineObject.getPath());
+          _this.$emit('update:path', extractPath(_this.$polylineObject.getPath()));
         };
 
         eventListeners.push([mvcPath, mvcPath.addListener('insert_at', updatePaths)]);
@@ -111,10 +120,17 @@ exports.default = {
         };
       }
     }, {
-      deep: this.deepWatch
+      deep: this.deepWatch,
+      immediate: true
     });
 
     // Display the map
     this.$polylineObject.setMap(this.$map);
+  },
+
+  methods: {
+    createPolylineObject: function createPolylineObject(options) {
+      return new google.maps.Polyline(options);
+    }
   }
 };

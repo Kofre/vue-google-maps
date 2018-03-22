@@ -8,6 +8,10 @@ var _omit = require('lodash/omit');
 
 var _omit2 = _interopRequireDefault(_omit);
 
+var _isFunction = require('lodash/isFunction');
+
+var _isFunction2 = _interopRequireDefault(_isFunction);
+
 var _manager = require('../manager.js');
 
 var _deferredReady = require('../utils/deferredReady.js');
@@ -78,6 +82,9 @@ var customMethods = {
     if (this.$panoObject) {
       google.maps.event.trigger(this.$panoObject, 'resize');
     }
+  },
+  createStreetViewPanoramaObject: function createStreetViewPanoramaObject(element, options) {
+    return new google.maps.StreetViewPanorama(element, options);
   }
 };
 
@@ -143,10 +150,23 @@ exports.default = {
       // creating the map
       var options = Object.assign({}, _this2.options, (0, _omit2.default)(_this2.getPropsValues(), ['options']));
 
-      _this2.$panoObject = new google.maps.StreetViewPanorama(element, options);
+      _this2.$panoObject = _this2.createStreetViewPanoramaObject(element, options);
 
       // binding properties (two and one way)
       (0, _propsBinder2.default)(_this2, _this2.$panoObject, (0, _omit2.default)(props, ['position']));
+
+      _this2.$on('pano_changed', function () {
+        _this2.$emit('update:pano', _this2.$panoObject.pano);
+      });
+      _this2.$on('pov_changed', function () {
+        _this2.$emit('update:pov', _this2.$panoObject.pov);
+      });
+      _this2.$on('visible_changed', function () {
+        _this2.$emit('update:visible', _this2.$panoObject.visible);
+      });
+      _this2.$on('zoom_changed', function () {
+        _this2.$emit('update:zoom', _this2.$panoObject.zoom);
+      });
 
       // manually trigger position
       (0, _TwoWayBindingWrapper2.default)(function (increment, decrement, shouldUpdate) {
@@ -156,6 +176,10 @@ exports.default = {
         _this2.$panoObject.addListener('position_changed', function () {
           if (shouldUpdate()) {
             _this2.$emit('position_changed', _this2.$panoObject.getPosition());
+            _this2.$emit('update:position', _this2.position && (0, _isFunction2.default)(_this2.position.lat) ? _this2.$panoObject.getPosition() : {
+              lat: _this2.$panoObject.getPosition().lat(),
+              lng: _this2.$panoObject.getPosition().lng()
+            });
           }
           decrement();
         });

@@ -91,7 +91,7 @@ exports.default = {
         }
       });
 
-      _this.$autocomplete = new google.maps.places.Autocomplete(_this.$refs.input, finalOptions);
+      _this.$autocomplete = _this.createAutoCompleteObj(_this.$refs.input, finalOptions);
       (0, _propsBinder2.default)(_this, _this.$autocomplete, (0, _omit2.default)(props, ['placeholder', 'place', 'selectFirstOnEnter', 'value', 'componentRestrictions']));
 
       _this.$autocomplete.addListener('place_changed', function () {
@@ -100,5 +100,10 @@ exports.default = {
     });
   },
 
+  methods: {
+    createAutoCompleteObj: function createAutoCompleteObj(input, options) {
+      return new google.maps.places.Autocomplete(input, options);
+    }
+  },
   props: props
 };

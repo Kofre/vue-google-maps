@@ -12,6 +12,10 @@ var _eventsBinder = require('../utils/eventsBinder.js');
 
 var _eventsBinder2 = _interopRequireDefault(_eventsBinder);
 
+var _isObject = require('lodash/isObject');
+
+var _isObject2 = _interopRequireDefault(_isObject);
+
 var _propsBinder = require('../utils/propsBinder.js');
 
 var _propsBinder2 = _interopRequireDefault(_propsBinder);
@@ -29,15 +33,6 @@ var _markerClustererPlus = require('marker-clusterer-plus');
 var _markerClustererPlus2 = _interopRequireDefault(_markerClustererPlus);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/* vim: set softtabstop=2 shiftwidth=2 expandtab : */
-
-/**
-  * @class Cluster
-  * @prop $clusterObject -- Exposes the marker clusterer to
-        descendent Marker classes. Override this if you area
-        extending the class
-**/
 
 var props = {
   maxZoom: {
@@ -60,7 +55,14 @@ var props = {
     type: Array,
     twoWay: false
   }
-};
+}; /* vim: set softtabstop=2 shiftwidth=2 expandtab : */
+
+/**
+ * @class Cluster
+ * @prop $clusterObject -- Exposes the marker clusterer to
+ descendent Marker classes. Override this if you area
+ extending the class
+ **/
 
 var events = ['click', 'rightclick', 'dblclick', 'drag', 'dragstart', 'dragend', 'mouseup', 'mousedown', 'mouseover', 'mouseout'];
 
@@ -72,18 +74,15 @@ exports.default = {
     // <div><slot></slot></div>
     return h('div', this.$slots.default);
   },
+  created: function created() {
+    this.$on('register-marker', this.registerMarker);
+    this.$on('unregister-marker', this.unregisterMarker);
+  },
   deferredReady: function deferredReady() {
     var _this = this;
 
     var options = (0, _clone2.default)(this.getPropsValues());
-
-    if (typeof _markerClustererPlus2.default === 'undefined') {
-      /* eslint-disable no-console */
-      console.error('MarkerClusterer is not installed! require() it or include it from https://cdnjs.cloudflare.com/ajax/libs/js-marker-clusterer/1.0.0/markerclusterer.js');
-      throw new Error('MarkerClusterer is not installed! require() it or include it from https://cdnjs.cloudflare.com/ajax/libs/js-marker-clusterer/1.0.0/markerclusterer.js');
-    }
-
-    this.$clusterObject = new _markerClustererPlus2.default(this.$map, [], options);
+    this.$clusterObject = this.createMarkerClusterObject(this.$map, [], options);
 
     (0, _propsBinder2.default)(this, this.$clusterObject, props, {
       afterModelChanged: function afterModelChanged(a, v) {
@@ -106,6 +105,37 @@ exports.default = {
     });
     if (this.$clusterObject) {
       this.$clusterObject.clearMarkers();
+    }
+  },
+
+  methods: {
+    createMarkerClusterObject: function createMarkerClusterObject(map, optMarkers, optOptions) {
+      if (typeof _markerClustererPlus2.default === 'undefined') {
+        var errorMessage = 'MarkerClusterer is not installed! require() it or include it from https://cdnjs.cloudflare.com/ajax/libs/js-marker-clusterer/1.0.0/markerclusterer.js';
+        console.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      return new _markerClustererPlus2.default(map, optMarkers, optOptions);
+    },
+    repaint: function repaint() {
+      this.$clusterObject.repaint();
+    },
+    registerMarker: function registerMarker(_ref) {
+      var marker = _ref.object;
+
+      if (!this.$clusterObject || !(0, _isObject2.default)(marker)) {
+        return;
+      }
+      this.$clusterObject.addMarker(marker);
+      marker.addListener('position_changed', this.repaint);
+    },
+    unregisterMarker: function unregisterMarker(_ref2) {
+      var marker = _ref2.object;
+
+      if (!this.$clusterObject || !(0, _isObject2.default)(marker)) {
+        return;
+      }
+      this.$clusterObject.removeMarker(marker);
     }
   }
 };

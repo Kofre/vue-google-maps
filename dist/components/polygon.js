@@ -82,12 +82,29 @@ exports.default = {
     if (!options.paths) {
       delete options.paths;
     }
-    this.$polygonObject = new google.maps.Polygon(options);
+    this.$polygonObject = this.createPolygonObject(options);
 
     (0, _propsBinder2.default)(this, this.$polygonObject, (0, _omit2.default)(props, ['path', 'paths', 'deepWatch']));
     (0, _eventsBinder2.default)(this, this.$polygonObject, events);
 
     var clearEvents = function clearEvents() {};
+
+    var extractPath = function extractPath(mvcArray) {
+      var path = [];
+      for (var j = 0; j < mvcArray.getLength(); j++) {
+        var point = mvcArray.getAt(j);
+        path.push({ lat: point.lat(), lng: point.lng() });
+      }
+      return path;
+    };
+
+    var extractPaths = function extractPaths(mvcArray) {
+      var paths = [];
+      for (var i = 0; i < mvcArray.getLength(); i++) {
+        paths.push(extractPath(mvcArray.getAt(i)));
+      }
+      return paths;
+    };
 
     // Watch paths, on our own, because we do not want to set either when it is
     // empty
@@ -99,6 +116,7 @@ exports.default = {
 
         var updatePaths = function updatePaths() {
           _this.$emit('paths_changed', _this.$polygonObject.getPaths());
+          _this.$emit('update:paths', extractPaths(_this.$polygonObject.getPaths()));
         };
         var eventListeners = [];
 
@@ -134,13 +152,14 @@ exports.default = {
       if (path) {
         clearEvents();
 
-        _this.$polygonObject.setPaths(path);
+        _this.$polygonObject.setPath(path);
 
         var mvcPath = _this.$polygonObject.getPath();
         var eventListeners = [];
 
         var updatePaths = function updatePaths() {
           _this.$emit('path_changed', _this.$polygonObject.getPath());
+          _this.$emit('update:path', extractPath(_this.$polygonObject.getPath()));
         };
 
         eventListeners.push([mvcPath, mvcPath.addListener('insert_at', updatePaths)]);
@@ -166,5 +185,11 @@ exports.default = {
 
     // Display the map
     this.$polygonObject.setMap(this.$map);
+  },
+
+  methods: {
+    createPolygonObject: function createPolygonObject(options) {
+      return new google.maps.Polygon(options);
+    }
   }
 };

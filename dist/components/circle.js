@@ -8,6 +8,10 @@ var _clone = require('lodash/clone');
 
 var _clone2 = _interopRequireDefault(_clone);
 
+var _isFunction = require('lodash/isFunction');
+
+var _isFunction2 = _interopRequireDefault(_isFunction);
+
 var _eventsBinder = require('../utils/eventsBinder.js');
 
 var _eventsBinder2 = _interopRequireDefault(_eventsBinder);
@@ -56,7 +60,6 @@ var events = ['click', 'dblclick', 'drag', 'dragend', 'dragstart', 'mousedown', 
 exports.default = {
   mixins: [_mapElementMixin2.default, _getPropsValuesMixin2.default],
   props: props,
-  version: 2,
 
   render: function render() {
     return '';
@@ -70,26 +73,39 @@ exports.default = {
 
 
   methods: {
+    createCircleObject: function createCircleObject(options) {
+      return new google.maps.Circle(options);
+    },
     createCircle: function createCircle(options) {
       var _this = this;
 
-      this.$circleObject = new google.maps.Circle(options);
+      this.$circleObject = this.createCircleObject(options);
       // we cant bind bounds because there is no `setBounds` method
       // on the Circle object
       var boundProps = (0, _clone2.default)(props);
       delete boundProps.bounds;
       (0, _propsBinder2.default)(this, this.$circleObject, boundProps);
-      (0, _eventsBinder2.default)(this, this.$circleObject, events);
 
       var updateBounds = function updateBounds() {
         _this.$emit('bounds_changed', _this.$circleObject.getBounds());
       };
+      var radiusChange = function radiusChange() {
+        _this.$emit('update:radius', _this.$circleObject.radius);
+        updateBounds();
+      };
+      var centerChange = function centerChange() {
+        _this.$emit('update:center', _this.center && (0, _isFunction2.default)(_this.center.lat) ? _this.$circleObject.center : {
+          lat: _this.$circleObject.center.lat(),
+          lng: _this.$circleObject.center.lng()
+        });
+        updateBounds();
+      };
+      this.$on('radius_changed', radiusChange);
+      this.$on('center_changed', centerChange);
 
-      this.$on('radius_changed', updateBounds);
-      this.$on('center_changed', updateBounds);
+      (0, _eventsBinder2.default)(this, this.$circleObject, events);
     }
   },
-
   destroyed: function destroyed() {
     if (this.$circleObject) {
       this.$circleObject.setMap(null);

@@ -12,6 +12,10 @@ var _clone = require('lodash/clone');
 
 var _clone2 = _interopRequireDefault(_clone);
 
+var _isFunction = require('lodash/isFunction');
+
+var _isFunction2 = _interopRequireDefault(_isFunction);
+
 var _propsBinder = require('../utils/propsBinder.js');
 
 var _propsBinder2 = _interopRequireDefault(_propsBinder);
@@ -36,7 +40,8 @@ var props = {
   },
   opened: {
     type: Boolean,
-    default: true
+    default: true,
+    twoWay: true
   },
   position: {
     type: Object,
@@ -52,25 +57,20 @@ var events = ['domready', 'closeclick', 'content_changed'];
 
 exports.default = {
   mixins: [_mapElementMixin2.default],
-  replace: false,
   props: props,
 
   mounted: function mounted() {
     var el = this.$refs.flyaway;
     el.parentNode.removeChild(el);
   },
-  deferredReady: function deferredReady() {
+  beforeCreate: function beforeCreate() {
     this.$markerObject = null;
-    this.$markerComponent = this.$findAncestor(function (ans) {
-      return ans.$markerObject;
-    });
-
-    if (this.$markerComponent) {
-      this.$markerObject = this.$markerComponent.$markerObject;
-    }
+  },
+  deferredReady: function deferredReady() {
     this.createInfoWindow();
   },
   destroyed: function destroyed() {
+    this.$parent.$emit('unregister-info-window', { component: this, object: this.$infoWindow });
     if (this.disconnect) {
       this.disconnect();
     }
@@ -92,7 +92,10 @@ exports.default = {
         this.$infoWindow.close();
       }
     },
-    createInfoWindow: function createInfoWindow() {
+    createInfoWindowObject: function createInfoWindowObject(options) {
+      return new google.maps.InfoWindow(options);
+    },
+    createInfoWindow: function createInfoWindow(map) {
       var _this = this;
 
       // setting options
@@ -100,15 +103,32 @@ exports.default = {
       options.content = this.$refs.flyaway;
 
       // only set the position if the info window is not bound to a marker
-      if (this.$markerComponent === null) {
+      if (this.$markerObject === null) {
         options.position = this.position;
       }
 
-      this.$infoWindow = new google.maps.InfoWindow(options);
+      this.$infoWindow = this.createInfoWindowObject(options);
 
       // Binding
       (0, _propsBinder2.default)(this, this.$infoWindow, (0, _omit2.default)(props, ['opened']));
+
+      this.$on('position_changed', function () {
+        _this.$emit('update:position', _this.position && (0, _isFunction2.default)(_this.position.lat) ? _this.$infoWindow.position : {
+          lat: _this.$infoWindow.position.lat(),
+          lng: _this.$infoWindow.position.lng()
+        });
+      });
+      this.$on('zindex_changed', function () {
+        _this.$emit('update:zIndex', _this.$infoWindow.zIndex);
+      });
+
       (0, _eventsBinder2.default)(this, this.$infoWindow, events);
+
+      this.$on('closeclick', function () {
+        _this.$emit('update:opened', false);
+      });
+
+      this.$parent.$emit('register-info-window', { component: this, object: this.$infoWindow });
 
       this.openInfoWindow();
       this.$watch('opened', function () {
