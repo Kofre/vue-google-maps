@@ -94,7 +94,7 @@ exports.default = {
         updateBounds();
       };
       var centerChange = function centerChange() {
-        _this.$emit('update:center', _this.center && (0, _isFunction2.default)(_this.center.lat) ? _this.$circleObject.center : {
+        _this.$emit('update:center', !_this.center || _this.center && (0, _isFunction2.default)(_this.center.lat) ? _this.$circleObject.center : {
           lat: _this.$circleObject.center.lat(),
           lng: _this.$circleObject.center.lng()
         });

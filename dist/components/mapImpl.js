@@ -179,7 +179,7 @@ exports.default = {
           if (shouldUpdate()) {
             var center = _this2.$mapObject.getCenter();
             _this2.$emit('center_changed', center);
-            _this2.$emit('update:center', _this2.center && (0, _isFunction2.default)(_this2.center.lat) ? center : {
+            _this2.$emit('update:center', !_this2.center || _this2.center && (0, _isFunction2.default)(_this2.center.lat) ? center : {
               lat: center.lat(),
               lng: center.lng()
             });
@@ -202,7 +202,7 @@ exports.default = {
       _this2.$mapObject.addListener('bounds_changed', function () {
         var bounds = _this2.$mapObject.getBounds();
         _this2.$emit('bounds_changed', bounds);
-        _this2.$emit('update:bounds', _this2.bounds && (0, _isFunction2.default)(_this2.bounds.getNorthEast) ? bounds : {
+        _this2.$emit('update:bounds', !_this2.bounds || _this2.bounds && (0, _isFunction2.default)(_this2.bounds.getNorthEast) ? bounds : {
           north: bounds && bounds.getNorthEast().lat() || null,
           east: bounds && bounds.getNorthEast().lng() || null,
           south: bounds && bounds.getSouthWest().lat() || null,

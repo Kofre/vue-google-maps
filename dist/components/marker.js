@@ -165,7 +165,7 @@ exports.default = {
         _this2.$emit('update:icon', _this2.$markerObject.icon);
       });
       this.$on('position_changed', function () {
-        _this2.$emit('update:position', _this2.position && (0, _isFunction2.default)(_this2.position.lat) ? _this2.$markerObject.getPosition() : {
+        _this2.$emit('update:position', !_this2.position || _this2.position && (0, _isFunction2.default)(_this2.position.lat) ? _this2.$markerObject.getPosition() : {
           lat: _this2.$markerObject.getPosition().lat(),
           lng: _this2.$markerObject.getPosition().lng()
         });

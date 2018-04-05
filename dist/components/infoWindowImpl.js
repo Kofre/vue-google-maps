@@ -113,7 +113,7 @@ exports.default = {
       (0, _propsBinder2.default)(this, this.$infoWindow, (0, _omit2.default)(props, ['opened']));
 
       this.$on('position_changed', function () {
-        _this.$emit('update:position', _this.position && (0, _isFunction2.default)(_this.position.lat) ? _this.$infoWindow.position : {
+        _this.$emit('update:position', !_this.position || _this.position && (0, _isFunction2.default)(_this.position.lat) ? _this.$infoWindow.position : {
           lat: _this.$infoWindow.position.lat(),
           lng: _this.$infoWindow.position.lng()
         });

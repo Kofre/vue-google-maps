@@ -176,7 +176,7 @@ exports.default = {
         _this2.$panoObject.addListener('position_changed', function () {
           if (shouldUpdate()) {
             _this2.$emit('position_changed', _this2.$panoObject.getPosition());
-            _this2.$emit('update:position', _this2.position && (0, _isFunction2.default)(_this2.position.lat) ? _this2.$panoObject.getPosition() : {
+            _this2.$emit('update:position', !_this2.position || _this2.position && (0, _isFunction2.default)(_this2.position.lat) ? _this2.$panoObject.getPosition() : {
               lat: _this2.$panoObject.getPosition().lat(),
               lng: _this2.$panoObject.getPosition().lng()
             });
