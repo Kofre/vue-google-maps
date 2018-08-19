@@ -110,10 +110,11 @@ export default {
     this.$on('unregister-info-window', this.unregisterInfoWindow)
   },
 
-  destroyed () {
-    if (this.$markerObject) {
-      this.$parent && this.$parent.$emit('unregister-marker', {component: this, object: this.$markerObject})
+  beforeDestroy () {
+    if (!this.$markerObject) {
+      return
     }
+    this.$parent && this.$parent.$emit('unregister-marker', {component: this, object: this.$markerObject})
     this.$markerObject.setMap(null)
   },
 

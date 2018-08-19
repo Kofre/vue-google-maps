@@ -84,11 +84,17 @@ export default {
 
   beforeDestroy () {
     /* Performance optimization when destroying a large number of markers */
-    this.$children.forEach(marker => {
+    const removeCluster = marker => {
       if (marker.$clusterObject === this.$clusterObject) {
         marker.$clusterObject = null
       }
-    })
+      if (Array.isArray(marker.$children)) {
+        marker.$children.forEach(removeCluster)
+      }
+    }
+    if (Array.isArray(this.$children)) {
+      this.$children.forEach(removeCluster)
+    }
     if (this.$clusterObject) {
       this.$clusterObject.clearMarkers()
     }
