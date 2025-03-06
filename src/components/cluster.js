@@ -13,7 +13,8 @@ import isObject from 'lodash/isObject'
 import propsBinder from '../utils/propsBinder.js'
 import MapElementMixin from './mapElementMixin'
 import getPropsValuesMixin from '../utils/getPropsValuesMixin.js'
-import MarkerClusterer from 'marker-clusterer-plus'
+// import MarkerClusterer from 'marker-clusterer-plus'
+import { MarkerClusterer } from '@googlemaps/markerclusterer'
 
 const props = {
   maxZoom: {
@@ -106,7 +107,8 @@ export default {
         console.error(errorMessage)
         throw new Error(errorMessage)
       }
-      return new MarkerClusterer(map, optMarkers, optOptions)
+      // return new MarkerClusterer(map, optMarkers, optOptions)
+      return new MarkerClusterer({map, markers: optMarkers, algorithmOptions: optOptions})
     },
     repaint () {
       this.$clusterObject.repaint()

@@ -1,6 +1,6 @@
 {
   "name": "vue2-google-maps",
-  "version": "0.9.0",
+  "version": "1.5.0",
   "description": "This is a google map component for Vue.js, updated for Vue 2 compatibility",
   "main": "dist/main.js",
   "scripts": {
@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/xkjyeah/vue-google-maps#readme",
   "dependencies": {
+    "@googlemaps/markerclusterer": "^2.5.3",
     "babel-runtime": "^5.8.0",
     "marker-clusterer-plus": "^2.1.4"
   },
